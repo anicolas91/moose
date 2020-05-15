@@ -1,0 +1,43 @@
+//* This file is part of the MOOSE framework
+//* https://www.mooseframework.org
+//*
+//* All rights reserved, see COPYRIGHT for full restrictions
+//* https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//*
+//* Licensed under LGPL 2.1, please see LICENSE for details
+//* https://www.gnu.org/licenses/lgpl-2.1.html
+
+#include "INSStressComponentAuxMOD.h"
+#include "MooseMesh.h"
+
+registerMooseObject("NavierStokesApp", INSStressComponentAuxMOD);
+
+InputParameters
+INSStressComponentAuxMOD::validParams()
+{
+  InputParameters params = AuxKernel::validParams();
+
+  params.addClassDescription("This class computes the stress component based on "
+                             "pressure and velocity for incompressible Navier-Stokes");
+  params.addCoupledVar("velocity", "The velocity component");
+  params.addCoupledVar("pressure", 0, "The pressure");
+  params.addRangeCheckedParam<unsigned int>("comp", 0, "0<=comp<=2", "The component");
+  params.addParam<MaterialPropertyName>("mu_name", "mu", "The viscosity");
+
+  return params;
+}
+
+INSStressComponentAuxMOD::INSStressComponentAuxMOD(const InputParameters & parameters)
+  : AuxKernel(parameters),
+    _grad_velocity(isCoupled("velocity") ? coupledGradient("velocity") : _grad_zero),
+    _pressure(coupledValue("pressure")),
+    _comp(getParam<unsigned>("comp")),
+    _mu(getMaterialProperty<Real>("mu_name")) //need to convert from AD!
+{
+}
+
+Real
+INSStressComponentAuxMOD::computeValue()
+{
+  return _pressure[_qp] - 2.0 * _mu[_qp] * _grad_velocity[_qp](_comp);
+}
