@@ -33,7 +33,7 @@ INSADNonNewtonianMu::INSADNonNewtonianMu(const InputParameters & parameters)
     // constants and mu
     _mu_in(getParam<Real>("mu_in")),
     _nexp(getParam<Real>("nexp")),
-    _mu(declareADProperty<Real>("mu"))
+    _mu(declareADProperty<Real>("mu")) //converted from AD
 {
 }
 

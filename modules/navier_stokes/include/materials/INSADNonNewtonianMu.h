@@ -31,6 +31,6 @@ protected:
 
   const Real _mu_in;
   const Real _nexp;
-  ADMaterialProperty<Real> & _mu;
+  ADMaterialProperty<Real> & _mu; //converted from AD
 
 };

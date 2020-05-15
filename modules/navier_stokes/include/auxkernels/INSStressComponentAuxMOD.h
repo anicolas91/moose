@@ -32,5 +32,5 @@ protected:
   const VariableGradient & _grad_velocity;
   const VariableValue & _pressure;
   const unsigned _comp;
-  const MaterialProperty<Real> & _mu;
+  const MaterialProperty<Real> & _mu; //converted from AD
 };
