@@ -32,7 +32,7 @@ INSStressComponentAuxMOD::INSStressComponentAuxMOD(const InputParameters & param
     _grad_velocity(isCoupled("velocity") ? coupledGradient("velocity") : _grad_zero),
     _pressure(coupledValue("pressure")),
     _comp(getParam<unsigned>("comp")),
-    _mu(getMaterialProperty<Real>("mu_name")) //need to convert from AD!
+    _mu(getMaterialProperty<Real>("mu_name"))
 {
 }
 

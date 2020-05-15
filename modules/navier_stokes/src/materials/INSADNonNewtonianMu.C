@@ -31,7 +31,7 @@ INSADNonNewtonianMu::INSADNonNewtonianMu(const InputParameters & parameters)
     _velocity(adCoupledVectorValue("velocity")),
     _grad_velocity(adCoupledVectorGradient("velocity")),
     // constants and mu
-    _mu_in(getParam<Real>("mu_in")), //Input initial viscosity!
+    _mu_in(getParam<Real>("mu_in")),
     _nexp(getParam<Real>("nexp")),
     _mu(declareADProperty<Real>("mu"))
 {
