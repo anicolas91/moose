@@ -29,8 +29,8 @@ protected:
   /// gradient of velocity
   const ADVectorVariableGradient & _grad_velocity;
 
-  const Real _mu_in;
-  const Real _nexp;
+  const Real _A_val;
+  const Real _mexp;
   ADMaterialProperty<Real> & _mu; //converted from AD
 
 };
