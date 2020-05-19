@@ -20,8 +20,8 @@ INSADNonNewtonianMu::validParams()
 {
   InputParameters params = ADMaterial::validParams();
   params.addRequiredCoupledVar("velocity", "The velocity");
-  params.addParam<Real>("mu_in",1.,"Viscosity factor");
-  params.addParam<Real>("nexp",1.,"Exponential factor in the viscosity power law");
+  params.addParam<Real>("A_val",1.,"Creep A value in the power law");
+  params.addParam<Real>("mexp",1.,"Creep m Exponential factor in the power law");
   return params;
 }
 
@@ -30,9 +30,9 @@ INSADNonNewtonianMu::INSADNonNewtonianMu(const InputParameters & parameters)
     // velocities and gradients
     _velocity(adCoupledVectorValue("velocity")),
     _grad_velocity(adCoupledVectorGradient("velocity")),
-    // constants and mu
-    _mu_in(getParam<Real>("mu_in")),
-    _nexp(getParam<Real>("nexp")),
+    // constants and viscosity
+    _A_val(getParam<Real>("A_val")),
+    _mexp(getParam<Real>("mexp")),
     _mu(declareADProperty<Real>("mu")) //converted from AD
 {
 }
@@ -68,17 +68,20 @@ INSADNonNewtonianMu::computeQpProperties()
 
   auto && shear = std::sqrt( 2.0/3.0 * shearsq);
 
+  const Real nexp  = 1.0/_mexp;
+  const Real mu_in = std::pow( _A_val , -1.0 * nexp);
+
 // Moose::out<<"eff shear: "<<shear<<"\n";
 // Moose::out<<"only rr shear: "<<shear<<"\n";
 // Moose::out<<shear<<"\n";
 
   if (shear <= 1e-100)
   {
-  	_mu[_qp] = _mu_in;
+  	_mu[_qp] = mu_in;
   }
   else
   {
-    _mu[_qp] = _mu_in *  std::pow( shear , _nexp-1.0);
+    _mu[_qp] = mu_in *  std::pow( shear , nexp-1.0);
   }
 
 }
