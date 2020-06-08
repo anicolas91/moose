@@ -39,5 +39,6 @@ INSStressComponentAuxMOD::INSStressComponentAuxMOD(const InputParameters & param
 Real
 INSStressComponentAuxMOD::computeValue()
 {
+  // calculates the usual main components
   return -_pressure[_qp] + 2.0 * _mu[_qp] * _grad_velocity[_qp](_comp);
 }
