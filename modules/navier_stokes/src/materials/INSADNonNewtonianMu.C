@@ -73,7 +73,6 @@ INSADNonNewtonianMu::computeQpProperties()
 
 // Moose::out<<"eff shear: "<<shear<<"\n";
 // Moose::out<<"only rr shear: "<<shear<<"\n";
-// Moose::out<<shear<<"\n";
 
   if (shear <= 1e-100)
   {
@@ -83,5 +82,7 @@ INSADNonNewtonianMu::computeQpProperties()
   {
     _mu[_qp] = mu_in *  std::pow( shear , nexp-1.0);
   }
+
+// Moose::out<<"NN viscosity: "<<_mu[_qp]<<"\n";
 
 }
