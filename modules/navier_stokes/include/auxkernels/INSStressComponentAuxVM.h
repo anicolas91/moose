@@ -16,22 +16,23 @@
 /**
  * Computes h_min / |u|
  */
-class INSStressComponentAuxMOD : public AuxKernel
+class INSStressComponentAuxVM : public AuxKernel
 {
 public:
   static InputParameters validParams();
 
-  INSStressComponentAuxMOD(const InputParameters & parameters);
+  INSStressComponentAuxVM(const InputParameters & parameters);
 
-  virtual ~INSStressComponentAuxMOD() {}
+  virtual ~INSStressComponentAuxVM() {}
 
 protected:
   virtual Real computeValue();
 
   // Velocity gradients
-  const VariableGradient & _grad_velocity;
-  const VariableValue & _velocity;
+  const VariableValue & _velocity_r;
+  const VariableValue & _velocity_z;
+  const VariableGradient & _grad_velocity_r;
+  const VariableGradient & _grad_velocity_z;
   const VariableValue & _pressure;
-  const unsigned _comp;
   const MaterialProperty<Real> & _mu; //converted from AD
 };

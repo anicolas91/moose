@@ -30,6 +30,7 @@ INSStressComponentAuxMOD::validParams()
 INSStressComponentAuxMOD::INSStressComponentAuxMOD(const InputParameters & parameters)
   : AuxKernel(parameters),
     _grad_velocity(isCoupled("velocity") ? coupledGradient("velocity") : _grad_zero),
+    _velocity(coupledValue("velocity")),
     _pressure(coupledValue("pressure")),
     _comp(getParam<unsigned>("comp")),
     _mu(getMaterialProperty<Real>("mu_name")) //converted from AD
@@ -44,7 +45,7 @@ INSStressComponentAuxMOD::computeValue()
   if (_comp == 2)
   {
     const Real r = _q_point[_qp](0);
-    s = -_pressure[_qp] + 2.0 * _mu[_qp] * _grad_velocity[_qp](0) / r;
+    s = -_pressure[_qp] + 2.0 * _mu[_qp] * _velocity[_qp] / r;
   }
 
 return s;
