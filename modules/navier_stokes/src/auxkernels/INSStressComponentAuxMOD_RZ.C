@@ -7,13 +7,13 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "INSStressComponentAuxMOD.h"
+#include "INSStressComponentAuxMOD_RZ.h"
 #include "MooseMesh.h"
 
-registerMooseObject("NavierStokesApp", INSStressComponentAuxMOD);
+registerMooseObject("NavierStokesApp", INSStressComponentAuxMOD_RZ);
 
 InputParameters
-INSStressComponentAuxMOD::validParams()
+INSStressComponentAuxMOD_RZ::validParams()
 {
   InputParameters params = AuxKernel::validParams();
 
@@ -27,7 +27,7 @@ INSStressComponentAuxMOD::validParams()
   return params;
 }
 
-INSStressComponentAuxMOD::INSStressComponentAuxMOD(const InputParameters & parameters)
+INSStressComponentAuxMOD_RZ::INSStressComponentAuxMOD_RZ(const InputParameters & parameters)
   : AuxKernel(parameters),
     _grad_velocity(isCoupled("velocity") ? coupledGradient("velocity") : _grad_zero),
     _velocity(coupledValue("velocity")),
@@ -38,9 +38,15 @@ INSStressComponentAuxMOD::INSStressComponentAuxMOD(const InputParameters & param
 }
 
 Real
-INSStressComponentAuxMOD::computeValue()
+INSStressComponentAuxMOD_RZ::computeValue()
 {
   auto && s = -_pressure[_qp] + 2.0 *_mu[_qp] * _grad_velocity[_qp](_comp);
+
+  if (_comp == 2)
+  {
+    const Real r = _q_point[_qp](0);
+    s = -_pressure[_qp] + 2.0 * _mu[_qp] * _velocity[_qp] / r;
+  }
 
 return s;
 }

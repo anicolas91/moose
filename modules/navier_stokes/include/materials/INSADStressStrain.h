@@ -12,13 +12,13 @@
 #include "ADMaterial.h"
 
 // Forward Declarations
-class INSADNonNewtonianMu : public ADMaterial
+class INSADStressStrain : public ADMaterial
 
 {
 public:
   static InputParameters validParams();
 
-  INSADNonNewtonianMu(const InputParameters & parameters);
+  INSADStressStrain(const InputParameters & parameters);
 
 protected:
   virtual void computeQpProperties() override;
@@ -29,10 +29,13 @@ protected:
   /// gradient of velocity
   const ADVectorVariableGradient & _grad_velocity;
 
+  //  The stresses and pressure
+  ADMaterialProperty<RankTwoTensor> & _adstress;
+  ADMaterialProperty<RankTwoTensor> & _adstrain_rate;
+  const ADVariableValue & _pressure;
 
-  const Real _A_val;
-  const Real _mexp;
-  ADMaterialProperty<Real> & _mu; //converted from AD
+  // Other
+  const ADMaterialProperty<Real> & _mu; //converted from AD
   const Moose::CoordinateSystemType & _coord_sys;
 
 };

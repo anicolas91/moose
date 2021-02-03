@@ -9,30 +9,33 @@
 
 #pragma once
 
-#include "ADMaterial.h"
+#include "Material.h"
 
 // Forward Declarations
-class INSADNonNewtonianMu : public ADMaterial
+class INSStressStrain : public Material
 
 {
 public:
   static InputParameters validParams();
 
-  INSADNonNewtonianMu(const InputParameters & parameters);
+  INSStressStrain(const InputParameters & parameters);
 
 protected:
   virtual void computeQpProperties() override;
 
   /// velocity
-  const ADVectorVariableValue & _velocity;
+  const VectorVariableValue & _velocity;
 
   /// gradient of velocity
-  const ADVectorVariableGradient & _grad_velocity;
+  const VectorVariableGradient & _grad_velocity;
 
+  //  The stresses and pressure
+  MaterialProperty<RankTwoTensor> & _stress;
+  MaterialProperty<RankTwoTensor> & _strain_rate;
+  const VariableValue & _pressure;
 
-  const Real _A_val;
-  const Real _mexp;
-  ADMaterialProperty<Real> & _mu; //converted from AD
-  const Moose::CoordinateSystemType & _coord_sys;
+  // Other
+  const MaterialProperty<Real> & _mu; //converted from AD
+  // const Moose::CoordinateSystemType & _coord_sys;
 
 };

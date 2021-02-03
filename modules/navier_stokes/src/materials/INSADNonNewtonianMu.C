@@ -33,7 +33,8 @@ INSADNonNewtonianMu::INSADNonNewtonianMu(const InputParameters & parameters)
     // constants and viscosity
     _A_val(getParam<Real>("A_val")),
     _mexp(getParam<Real>("mexp")),
-    _mu(declareADProperty<Real>("mu")) //converted from AD
+    _mu(declareADProperty<Real>("mu")), //converted from AD
+    _coord_sys(_assembly.coordSystem())
 {
 }
 
@@ -58,13 +59,24 @@ INSADNonNewtonianMu::computeQpProperties()
   //                 + 4. * (_grad_u_vel[_qp](2) + _grad_w_vel[_qp](0)) * (_grad_u_vel[_qp](2) + _grad_w_vel[_qp](0))
   //                 + 4. * (_grad_v_vel[_qp](2) + _grad_w_vel[_qp](1)) * (_grad_v_vel[_qp](2) + _grad_w_vel[_qp](1))
   //                   );
-
-  const Real r = _q_point[_qp](0);
-
+  // plane strain means strains on z = 0
   auto && shearsq = 2.  * _grad_velocity[_qp](0,0) * _grad_velocity[_qp](0,0)
                   + 2.  * _grad_velocity[_qp](1,1) * _grad_velocity[_qp](1,1)
-                  + 2.  * (_velocity[_qp](0)/r) * (_velocity[_qp](0)/r)
+                  // + 2.  * _grad_velocity[_qp](2,2) * _grad_velocity[_qp](2,2)
                   + 1.0 * (_grad_velocity[_qp](0,1) + _grad_velocity[_qp](1,0)) * (_grad_velocity[_qp](0,1) + _grad_velocity[_qp](1,0));
+                  // + 1.0 * (_grad_velocity[_qp](2,1) + _grad_velocity[_qp](1,2)) * (_grad_velocity[_qp](2,1) + _grad_velocity[_qp](1,2))
+                  // + 1.0 * (_grad_velocity[_qp](0,2) + _grad_velocity[_qp](2,0)) * (_grad_velocity[_qp](0,2) + _grad_velocity[_qp](2,0));
+
+  if (_coord_sys == Moose::COORD_RZ)
+  {
+    const Real r = _q_point[_qp](0);
+
+    shearsq = 2.  * _grad_velocity[_qp](0,0) * _grad_velocity[_qp](0,0)
+                    + 2.  * _grad_velocity[_qp](1,1) * _grad_velocity[_qp](1,1)
+                    + 2.  * (_velocity[_qp](0)/r) * (_velocity[_qp](0)/r)
+                    + 1.0 * (_grad_velocity[_qp](0,1) + _grad_velocity[_qp](1,0)) * (_grad_velocity[_qp](0,1) + _grad_velocity[_qp](1,0));
+  }
+
 
   auto && shear = std::sqrt( 2.0/3.0 * shearsq);
 
